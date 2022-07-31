@@ -1,6 +1,16 @@
 import { createTheme } from "@mui/material";
 
 export const defaultTheme = createTheme({
+  palette: {
+    common: {
+      black: '#282828'
+    }
+  },
+  typography: {
+    h1: {
+      fontSize: '3rem'
+    }
+  },
   components: {
     MuiButton: {
       defaultProps: {

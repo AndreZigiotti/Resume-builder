@@ -1,40 +1,56 @@
+import { useAuth } from "@app/hooks/useAuth"
 import { AlternateEmail, Lock, Person } from "@mui/icons-material"
-import { Button, InputAdornment, TextField } from "@mui/material"
+import { Button, InputAdornment, TextField, Typography } from "@mui/material"
 import { Controller, useForm } from "react-hook-form"
 import { SignUpFormContainer } from "./style"
 
 type FormData = {
-  fullName: string,
+  name: string,
   email: string
-  password: string
+  password: string,
+  passwordConfirmation: string
 }
 
-type Props = {
-  onSubmit: (data: FormData) => void
-}
-
-export function SignUpForm({ onSubmit }: Props) {
-  const { control, handleSubmit } = useForm<FormData>({
+export function SignUpForm() {
+  const { loading, error, signUp } = useAuth()
+  const { control, handleSubmit, setError } = useForm<FormData>({
     defaultValues: {
-      fullName: '',
+      name: '',
       email: '',
-      password: ''
+      password: '',
+      passwordConfirmation: ''
     }
   })
 
-  function handleOnSubmit(data: FormData) {
-    console.log(data)
-    onSubmit(data)
+  function handleOnSubmit({ email, password, passwordConfirmation, name }: FormData) {
+    if(loading) return;
+
+    if(password !== passwordConfirmation) {
+      setError('passwordConfirmation', {
+        message: 'As senhas informadas não conferem.'
+      })
+      return
+    }
+
+    signUp({ email, name, password })
   }
 
   return (
     <SignUpFormContainer className="d-flex flex-column" onSubmit={handleSubmit(handleOnSubmit)}>
       <Controller
-        name="fullName"
+        name="name"
         control={control}
-        render={({ field }) => (
+        rules={{
+          required: {
+            value: true,
+            message: 'Este campo é obrigatório.'
+          }
+        }}
+        render={({ field, fieldState }) => (
           <TextField
-            label="Full Name"
+            label="Nome completo"
+            error={!!fieldState.error}
+            helperText={fieldState.error?.message}
             InputProps={{
               endAdornment: <InputAdornment position="end"><Person /></InputAdornment>
             }}
@@ -45,9 +61,17 @@ export function SignUpForm({ onSubmit }: Props) {
       <Controller
         name="email"
         control={control}
-        render={({ field }) => (
+        rules={{
+          required: {
+            value: true,
+            message: 'Este campo é obrigatório.'
+          }
+        }}
+        render={({ field, fieldState }) => (
           <TextField
             label="E-mail"
+            error={!!fieldState.error}
+            helperText={fieldState.error?.message}
             InputProps={{
               endAdornment: <InputAdornment position="end"><AlternateEmail /></InputAdornment>
             }}
@@ -58,10 +82,18 @@ export function SignUpForm({ onSubmit }: Props) {
       <Controller
         name="password"
         control={control}
-        render={({ field }) => (
+        rules={{
+          required: {
+            value: true,
+            message: 'Este campo é obrigatório.'
+          }
+        }}
+        render={({ field, fieldState }) => (
           <TextField
-            label="Password"
+            label="Senha"
             type="password"
+            error={!!fieldState.error}
+            helperText={fieldState.error?.message}
             InputProps={{
               endAdornment: <InputAdornment position="end"><Lock /></InputAdornment>
             }}
@@ -70,7 +102,41 @@ export function SignUpForm({ onSubmit }: Props) {
         )}
       />
 
-      <Button type="submit">Create account</Button>
+      <Controller
+        name="passwordConfirmation"
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Este campo é obrigatório.'
+          }
+        }}
+        render={({ field, fieldState }) => (
+          <TextField
+            label="Confirme a senha"
+            type="password"
+            error={!!fieldState.error}
+            helperText={fieldState.error?.message}
+            InputProps={{
+              endAdornment: <InputAdornment position="end"><Lock /></InputAdornment>
+            }}
+            {...field}
+          />
+        )}
+      />
+
+      {!!error && (
+        <Typography
+          className="error-message"
+          variant="body2"
+          color="error"
+          component="p"
+        >
+          {error}
+        </Typography>
+      )}
+
+      <Button type="submit">Criar conta</Button>
     </SignUpFormContainer>
   )
 }

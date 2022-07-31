@@ -9,6 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./App.routes";
 import { GlobalStyles } from "@app/styles/global";
 import { ThemeProvider } from "styled-components";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
         <CssBaseline />
         <GlobalStyles />
         <BrowserRouter>
-          <AppRoutes />
+          <AuthProvider>
+            <AppRoutes />
+          </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
     </MuiThemeProvider>

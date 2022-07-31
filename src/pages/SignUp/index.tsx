@@ -1,18 +1,47 @@
 import { routes } from "@app/App.routes"
+import { Brand } from "@app/components"
+import { useAuth } from "@app/hooks/useAuth"
 import { Typography } from "@mui/material"
-import { Link } from "react-router-dom"
+import { useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { SignUpForm } from "./SignUpForm"
 import { SignUpContainer } from "./style"
 
 export function SignUp() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   
+  useEffect(() => {
+    if(user) {
+      navigate(routes.home.path)
+    }
+  }, [user])
+
   return (
-    <SignUpContainer>
-      <Typography variant="h1" component="h1" className="title">My Resume</Typography>
+    <SignUpContainer className="d-flex flex-column">
+      <header>
+        <Brand />
+      </header>
 
-      <SignUpForm onSubmit={() => {}} />
+      <div className="wrapper d-flex flex-column justify-center">
+        <Typography
+          className="title"
+          variant="h4"
+          component="h2"
+        >
+          Bem-vindo!
+        </Typography>
 
-      <p>Already have an account? <Link to={routes.signIn.path}>Sign In</Link></p>
+        <SignUpForm />
+
+        <Typography
+          component="p"
+          textAlign="center"
+          color="grey.600"
+        >
+          Já possui uma conta? <Link className="cta" to={routes.signIn.path}>Entre aqui</Link>
+        </Typography>
+      </div>
     </SignUpContainer>
   )
 }
